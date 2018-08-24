@@ -1,0 +1,201 @@
+package com.arsenic.jose.strack;
+
+import android.os.AsyncTask;
+import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Toast;
+
+import com.dd.CircularProgressButton;
+import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
+import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
+import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+import java.io.IOException;
+
+public class MainActivity extends AppCompatActivity {
+    @BindView(R.id.trackingNumber) TextInputLayout trackingNumber;
+    @BindView(R.id.buscar) CircularProgressButton buscar;
+    @BindView(R.id.estadoET) EditText estado;
+    @BindView(R.id.origenET) EditText origen;
+    @BindView(R.id.destinoET) EditText destino;
+    @BindView(R.id.tipoET) EditText tipo;
+    @BindView(R.id.dummy) LinearLayout dummy;
+    //@BindView(R.id.menu) ImageView menu;
+
+    public static final String url = "http://clientes.serpost.com.pe/prj_online/Web_Busqueda.aspx/Consultar_Tracking";
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+
+        buscar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                buscar.setIndeterminateProgressMode(true);
+                buscar.setProgress(50);
+                //buscar.setIndeterminateProgressMode(true);
+                String trackNum = trackingNumber.getEditText().getText().toString();
+                if(trackNum.isEmpty()){
+                    trackingNumber.setErrorEnabled(true);
+                    trackingNumber.setError("Ingrese tracking number");
+                    buscar.setProgress(0);
+                    return;
+                }
+                JSONObject request = new JSONObject();
+                try{
+                    request.put("Anio", "2018");
+                    request.put("Tracking", trackNum);
+                } catch (Exception e){
+                    Toast toast = Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+
+                SerpostApiCall(request.toString());
+
+            }
+        });
+
+        trackingNumber.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                trackingNumber.setErrorEnabled(false);
+                estado.setText("");
+                origen.setText("");
+                destino.setText("");
+                tipo.setText("");
+                buscar.setProgress(0);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        ImageView icon = new ImageView(this); // Create an icon
+        icon.setImageDrawable( getResources().getDrawable(R.drawable.ic_menu) );
+
+        FloatingActionButton actionButton = new FloatingActionButton.Builder(this)
+                .setContentView(icon)
+                .build();
+
+        SubActionButton.Builder itemBuilder = new SubActionButton.Builder(this);
+
+        ImageView itemIcon1 = new ImageView(this);
+        itemIcon1.setImageDrawable( getResources().getDrawable(R.drawable.ic_add_black_24dp));
+        SubActionButton button1 = itemBuilder.setContentView(itemIcon1).build();
+
+        ImageView itemIcon2 = new ImageView(this);
+        itemIcon2.setImageDrawable( getResources().getDrawable(R.drawable.ic_clear_black_24dp));
+        SubActionButton button2 = itemBuilder.setContentView(itemIcon2).build();
+
+        FloatingActionMenu actionMenu = new FloatingActionMenu.Builder(this)
+                .addSubActionView(button1)
+                .addSubActionView(button2)
+                .attachTo(actionButton)
+                .build();
+
+
+    }
+
+
+    private void updateUI(JSONObject r) {
+        try{
+            JSONArray d = r.getJSONArray("d");
+
+            JSONObject item = d.getJSONObject(0);
+            estado.setText(item.getString("RetornoCadena3"));
+            origen.setText(item.getString("RetornoCadena5"));
+            destino.setText(item.getString("RetornoCadena6"));
+            tipo.setText(item.getString("RetornoCadena7"));
+            buscar.setProgress(100);
+
+        } catch (Exception e){
+            Toast toast = Toast.makeText(this, "Envio no encontrado", Toast.LENGTH_SHORT);
+            toast.show();
+            buscar.setProgress(-1);
+        }
+
+        dummy.requestFocus();
+
+    }
+
+    private void SerpostApiCall(String json) {
+
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+        OkHttpClient client = new OkHttpClient();
+
+        RequestBody body = RequestBody.create(JSON, json);
+
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast toast = Toast.makeText(MainActivity.this, "No se pudo contactar al servidor", Toast.LENGTH_SHORT);
+                        toast.show();
+                        buscar.setProgress(-1);
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String aux = response.body().string();
+                try{
+                    final JSONObject r = new JSONObject(aux);
+
+                    MainActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateUI(r);
+                        }
+                    });
+                } catch (JSONException e) {
+                    Log.d("mainactivity", "onResponse: " + e.getMessage());
+                }
+            }
+        });
+
+
+    }
+
+}

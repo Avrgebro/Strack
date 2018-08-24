@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="30dp"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="5"
+                android:orientation="vertical"
+                android:layout_gravity="center_horizontal">
+
+                <LinearLayout
+                    android:id="@+id/dummy"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:focusableInTouchMode="true"
+                    android:focusable="true"/>
+
+                <RelativeLayout
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <android.support.design.widget.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:id="@+id/trackingNumber"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:orientation="horizontal">
+                        <android.support.design.widget.TextInputEditText
+                            android:layout_width="200dp"
+                            android:layout_height="wrap_content"
+                            android:hint="Tracking Number"
+                            android:textAllCaps="true"
+                            android:inputType="textVisiblePassword"
+                            android:maxLength="20"/>
+                    </android.support.design.widget.TextInputLayout>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_search_black"
+                        android:layout_marginBottom="15dp"
+                        android:layout_gravity="center_vertical|center_horizontal"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:tint="@color/colorPrimaryDark"/>
+
+                </RelativeLayout>
+
+                <com.dd.CircularProgressButton
+                    android:id="@+id/buscar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginLeft="15dp"
+                    app:cpb_iconComplete="@drawable/ic_done"
+                    app:cpb_iconError="@drawable/ic_cancel"
+                    app:cpb_cornerRadius="20dp"
+                    app:cpb_textIdle="Consultar"
+                    android:textColor="@color/cpb_white"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="10"
+                android:orientation="vertical"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp">
+
+                <EditText
+                    android:inputType="textMultiLine"
+                    android:enabled="false"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Estado"
+                    android:id="@+id/estadoET"
+                    android:textColor="#000000"/>
+                <EditText
+                    android:enabled="false"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Origen"
+                    android:id="@+id/origenET"
+                    android:textColor="#000000"/>
+                <EditText
+                    android:enabled="false"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Destino"
+                    android:id="@+id/destinoET"
+                    android:textColor="#000000"/>
+                <EditText
+                    android:enabled="false"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Tipo"
+                    android:id="@+id/tipoET"
+                    android:textColor="#000000"/>
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+
+</LinearLayout>
