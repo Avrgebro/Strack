@@ -1,5 +1,6 @@
 package com.arsenic.jose.strack.View;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
@@ -9,13 +10,17 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Toast;
 
+import com.arsenic.jose.strack.Adapters.D1Adapter;
 import com.arsenic.jose.strack.DBController.DBmanager;
+import com.arsenic.jose.strack.Model.Envio;
 import com.arsenic.jose.strack.R;
 import com.dd.CircularProgressButton;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
@@ -58,6 +63,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         db = new DBmanager(this);
+
+        Envio e1 = new Envio("HK000006666SG", "que cosa", 2018);
+        Envio e2 = new Envio("HY040023466SG", "nanai", 2018);
+
+        db.insertRecord(e1);
+        db.insertRecord(e2);
 
         buscar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -215,15 +226,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void enviosDialog(){
-        AlertDialog.Builder builderSingle = new AlertDialog.Builder(MainActivity.this);
-        builderSingle.setTitle("Seleciona un envio");
 
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.select_dialog_singlechoice);
-        arrayAdapter.add("Hardik");
-        arrayAdapter.add("Archit");
-        arrayAdapter.add("Jignesh");
-        arrayAdapter.add("Umang");
-        arrayAdapter.add("Gatti");
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(MainActivity.this);
+        builderSingle.setTitle("Tus envios");
+
+        final D1Adapter adapter = new D1Adapter(MainActivity.this, db.getRecords());
 
         builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -232,20 +239,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+        builderSingle.setAdapter(adapter, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String strName = arrayAdapter.getItem(which);
-                AlertDialog.Builder builderInner = new AlertDialog.Builder(MainActivity.this);
-                builderInner.setMessage(strName);
-                builderInner.setTitle("Your Selected Item is");
-                builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                builderInner.show();
+                Envio e = (Envio) adapter.getItem(which);
+                MainActivity.this.trackingNumber.getEditText().setText(e.getTracking());
+                dialog.dismiss();
             }
         });
         builderSingle.show();
