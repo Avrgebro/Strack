@@ -16,10 +16,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.arsenic.jose.strack.Adapters.D1Adapter;
 import com.arsenic.jose.strack.DBController.DBmanager;
+import com.arsenic.jose.strack.Dates;
 import com.arsenic.jose.strack.Model.Envio;
 import com.arsenic.jose.strack.R;
 import com.dd.CircularProgressButton;
@@ -43,6 +45,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     @BindView(R.id.trackingNumber) TextInputLayout trackingNumber;
@@ -53,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.tipoET) EditText tipo;
     @BindView(R.id.dummy) LinearLayout dummy;
     @BindView(R.id.search) ImageView search;
+    @BindView(R.id.yearspinner) Spinner year;
 
     public static final String url = "http://clientes.serpost.com.pe/prj_online/Web_Busqueda.aspx/Consultar_Tracking";
     private DBmanager db;
@@ -64,11 +68,15 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         db = new DBmanager(this);
 
-        Envio e1 = new Envio("HK000006666SG", "que cosa", 2018);
-        Envio e2 = new Envio("HY040023466SG", "nanai", 2018);
+        ArrayList<String> anhos = new ArrayList<String>();
 
-        db.insertRecord(e1);
-        db.insertRecord(e2);
+        Dates dat = new Dates();
+
+        anhos.add(dat.getActual()+"");
+        anhos.add(dat.getAnterior()+"");
+
+        ArrayAdapter<String> datesAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, anhos);
+        year.setAdapter(datesAdapter);
 
         buscar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -223,6 +231,14 @@ public class MainActivity extends AppCompatActivity {
                 .addSubActionView(button2)
                 .attachTo(actionButton)
                 .build();
+
+        button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                agregarDialog();
+            }
+        });
+
     }
 
     private void enviosDialog(){
@@ -248,6 +264,59 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         builderSingle.show();
+    }
+
+    private void agregarDialog(){
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(MainActivity.this);
+        builderSingle.setTitle("Agregar Tracking Number");
+        builderSingle.setView(R.layout.dialog2_layout);
+
+        final TextInputLayout track = (TextInputLayout) findViewById(R.id.d2_tracking);
+        final TextInputLayout descp = (TextInputLayout) findViewById(R.id.d2_descripcion);
+        final Spinner anho = (Spinner) findViewById(R.id.d2_anho);
+
+        ArrayList<String> anhos = new ArrayList<String>();
+
+        Dates dat = new Dates();
+
+        anhos.add(dat.getActual()+"");
+        anhos.add(dat.getAnterior()+"");
+
+        ArrayAdapter<String> datesAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item, anhos);
+        anho.setAdapter(datesAdapter);
+
+        builderSingle.setPositiveButton("Guardar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String tr = track.getEditText().getText().toString();
+                String de = descp.getEditText().getText().toString();
+                String an = anho.getSelectedItem().toString();
+
+
+
+                if(tr.isEmpty() && de.isEmpty() && an.isEmpty()){
+                    return;
+                }
+
+                Envio e = new Envio(tr, de, Integer.parseInt(an));
+
+                MainActivity.this.db.insertRecord(e);
+
+            }
+        });
+
+        builderSingle.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builderSingle.show();
+
+
+
+
     }
 
 }

@@ -34,39 +34,58 @@
                     android:focusableInTouchMode="true"
                     android:focusable="true"/>
 
-                <RelativeLayout
-                    android:layout_width="200dp"
+                <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <android.support.design.widget.TextInputLayout
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:id="@+id/trackingNumber"
+                    <RelativeLayout
                         android:layout_width="200dp"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
                         android:orientation="horizontal">
-                        <android.support.design.widget.TextInputEditText
+
+                        <android.support.design.widget.TextInputLayout
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:id="@+id/trackingNumber"
                             android:layout_width="200dp"
                             android:layout_height="wrap_content"
-                            android:hint="Tracking Number"
-                            android:textAllCaps="true"
-                            android:inputType="textVisiblePassword"
-                            android:maxLength="20"/>
-                    </android.support.design.widget.TextInputLayout>
+                            android:layout_gravity="center_horizontal"
+                            android:orientation="horizontal">
+                            <android.support.design.widget.TextInputEditText
+                                android:layout_width="200dp"
+                                android:layout_height="wrap_content"
+                                android:hint="Tracking Number"
+                                android:textAllCaps="true"
+                                android:inputType="textVisiblePassword"
+                                android:maxLength="20"/>
+                        </android.support.design.widget.TextInputLayout>
 
-                    <ImageView
-                        android:id="@+id/search"
+                        <ImageView
+                            android:id="@+id/search"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_search_black"
+                            android:layout_marginBottom="15dp"
+                            android:layout_gravity="center_vertical|center_horizontal"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:tint="@color/colorPrimaryDark"/>
+
+                    </RelativeLayout>
+
+                    <Spinner
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_search_black"
-                        android:layout_marginBottom="15dp"
-                        android:layout_gravity="center_vertical|center_horizontal"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:tint="@color/colorPrimaryDark"/>
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="5dp"
+                        android:id="@+id/yearspinner">
 
-                </RelativeLayout>
+                    </Spinner>
+
+
+                </LinearLayout>
+
+
 
                 <com.dd.CircularProgressButton
                     android:id="@+id/buscar"
