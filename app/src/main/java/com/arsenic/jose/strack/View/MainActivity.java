@@ -2,6 +2,7 @@ package com.arsenic.jose.strack.View;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.origenET) EditText origen;
     @BindView(R.id.destinoET) EditText destino;
     @BindView(R.id.tipoET) EditText tipo;
-    @BindView(R.id.dummy) LinearLayout dummy;
+    //@BindView(R.id.dummy) LinearLayout dummy;
     @BindView(R.id.search) ImageView search;
     @BindView(R.id.yearspinner) Spinner year;
 
@@ -74,8 +75,11 @@ public class MainActivity extends AppCompatActivity {
 
         anhos.add(dat.getActual()+"");
         anhos.add(dat.getAnterior()+"");
+        anhos.add((dat.getAnterior()-1)+"");
+        anhos.add((dat.getAnterior()-2)+"");
 
-        ArrayAdapter<String> datesAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, anhos);
+        ArrayAdapter<String> datesAdapter = new ArrayAdapter<String>(this, R.layout.spinner_item, anhos);
+        datesAdapter.setDropDownViewResource(R.layout.spinner_item);
         year.setAdapter(datesAdapter);
 
         buscar.setOnClickListener(new View.OnClickListener() {
@@ -156,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
             buscar.setProgress(-1);
         }
 
-        dummy.requestFocus();
+        //dummy.requestFocus();
 
     }
 
@@ -235,9 +239,12 @@ public class MainActivity extends AppCompatActivity {
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                agregarDialog();
+                Intent intent = new Intent(MainActivity.this, AddActivity.class);
+                startActivity(intent);
+
             }
         });
+
 
     }
 
@@ -266,57 +273,6 @@ public class MainActivity extends AppCompatActivity {
         builderSingle.show();
     }
 
-    private void agregarDialog(){
-        AlertDialog.Builder builderSingle = new AlertDialog.Builder(MainActivity.this);
-        builderSingle.setTitle("Agregar Tracking Number");
-        builderSingle.setView(R.layout.dialog2_layout);
 
-        final TextInputLayout track = (TextInputLayout) findViewById(R.id.d2_tracking);
-        final TextInputLayout descp = (TextInputLayout) findViewById(R.id.d2_descripcion);
-        final Spinner anho = (Spinner) findViewById(R.id.d2_anho);
-
-        ArrayList<String> anhos = new ArrayList<String>();
-
-        Dates dat = new Dates();
-
-        anhos.add(dat.getActual()+"");
-        anhos.add(dat.getAnterior()+"");
-
-        ArrayAdapter<String> datesAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item, anhos);
-        anho.setAdapter(datesAdapter);
-
-        builderSingle.setPositiveButton("Guardar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String tr = track.getEditText().getText().toString();
-                String de = descp.getEditText().getText().toString();
-                String an = anho.getSelectedItem().toString();
-
-
-
-                if(tr.isEmpty() && de.isEmpty() && an.isEmpty()){
-                    return;
-                }
-
-                Envio e = new Envio(tr, de, Integer.parseInt(an));
-
-                MainActivity.this.db.insertRecord(e);
-
-            }
-        });
-
-        builderSingle.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-
-        builderSingle.show();
-
-
-
-
-    }
 
 }

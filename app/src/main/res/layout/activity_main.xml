@@ -28,7 +28,6 @@
                 android:layout_gravity="center_horizontal">
 
                 <LinearLayout
-                    android:id="@+id/dummy"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:focusableInTouchMode="true"
@@ -78,7 +77,11 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="5dp"
-                        android:id="@+id/yearspinner">
+                        android:id="@+id/yearspinner"
+                        android:spinnerMode="dropdown"
+                        android:dropDownWidth="70dp"
+                        style="@android:style/Widget.Holo.Light.Spinner"
+                        >
 
                     </Spinner>
 
