@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String url = "http://clientes.serpost.com.pe/prj_online/Web_Busqueda.aspx/Consultar_Tracking";
     private DBmanager db;
+    private Dates dat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<String> anhos = new ArrayList<String>();
 
-        Dates dat = new Dates();
+        dat = new Dates();
 
         anhos.add(dat.getActual()+"");
         anhos.add(dat.getAnterior()+"");
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         anhos.add((dat.getAnterior()-2)+"");
 
         ArrayAdapter<String> datesAdapter = new ArrayAdapter<String>(this, R.layout.spinner_item, anhos);
-        datesAdapter.setDropDownViewResource(R.layout.spinner_item);
+        datesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         year.setAdapter(datesAdapter);
 
         buscar.setOnClickListener(new View.OnClickListener() {
@@ -95,9 +96,10 @@ public class MainActivity extends AppCompatActivity {
                     buscar.setProgress(0);
                     return;
                 }
+                String anhoenv = year.getSelectedItem().toString();
                 JSONObject request = new JSONObject();
                 try{
-                    request.put("Anio", "2018");
+                    request.put("Anio", anhoenv);
                     request.put("Tracking", trackNum);
                 } catch (Exception e){
                     Toast toast = Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT);
@@ -267,6 +269,13 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 Envio e = (Envio) adapter.getItem(which);
                 MainActivity.this.trackingNumber.getEditText().setText(e.getTracking());
+
+                int cur = dat.getActual();
+                int sel = Integer.parseInt(MainActivity.this.year.getSelectedItem().toString());
+                int index = cur - sel;
+
+                year.setSelection(index);
+
                 dialog.dismiss();
             }
         });

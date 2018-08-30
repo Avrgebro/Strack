@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/cpb_grey">
+
+    <EditText
+        android:id="@+id/editText2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:ems="10"
+        android:inputType="textMultiLine" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -26,7 +36,7 @@
 
             <android.support.design.widget.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:id="@+id/trackingNumber"
+                android:id="@+id/addtrackingNumber"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -58,17 +68,29 @@
         <android.support.design.widget.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:id="@+id/adddescripcion"
+            android:layout_height="100dp"
+            app:counterMaxLength="45"
+            app:counterEnabled="true">
 
             <android.support.design.widget.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Descripcion"
-                />
+                android:inputType="textMultiLine"
+                android:maxLength="45" />
         </android.support.design.widget.TextInputLayout>
 
-
+        <Button
+            android:id="@+id/addenvio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Guardar"
+            android:backgroundTint="@color/colorAccent"
+            android:textColor="@color/cpb_white"
+            android:layout_gravity="center_horizontal" />
 
     </LinearLayout>
+
 
 </LinearLayout>

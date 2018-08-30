@@ -34,7 +34,7 @@
                         <option name="values">
                           <map>
                             <entry key="color" value="ffc107" />
-                            <entry key="outputName" value="ic_clea" />
+                            <entry key="outputName" value="ic_launcher2" />
                             <entry key="overrideSize" value="true" />
                             <entry key="sourceFile" value="$USER_HOME$" />
                           </map>
