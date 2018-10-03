@@ -17,6 +17,7 @@
         android:layout_height="wrap_content"
         android:text="Eliminar (6)"
         android:layout_alignParentBottom="true"
+        android:textColor="@color/cpb_white"
         android:background="@color/colorAccent"
         />
 

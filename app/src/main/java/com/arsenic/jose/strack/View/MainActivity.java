@@ -8,16 +8,20 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.Html;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.arsenic.jose.strack.Adapters.D1Adapter;
@@ -45,6 +49,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import java.io.Console;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -58,8 +63,10 @@ public class MainActivity extends AppCompatActivity {
     //@BindView(R.id.dummy) LinearLayout dummy;
     @BindView(R.id.search) ImageView search;
     @BindView(R.id.yearspinner) Spinner year;
+    @BindView(R.id.btn_detalle) Button detalle;
 
     public static final String url = "http://clientes.serpost.com.pe/prj_online/Web_Busqueda.aspx/Consultar_Tracking";
+    public static final String urlDetalle = "http://clientes.serpost.com.pe/prj_online/Web_Busqueda.aspx/Consultar_Tracking_Detalle";
     private DBmanager db;
     private Dates dat;
 
@@ -82,6 +89,8 @@ public class MainActivity extends AppCompatActivity {
         ArrayAdapter<String> datesAdapter = new ArrayAdapter<String>(this, R.layout.spinner_item, anhos);
         datesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         year.setAdapter(datesAdapter);
+
+        detalle.setEnabled(false);
 
         buscar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
                 destino.setText("");
                 tipo.setText("");
                 buscar.setProgress(0);
+                detalle.setEnabled(false);
             }
 
             @Override
@@ -137,6 +147,26 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 enviosDialog();
+            }
+        });
+
+        detalle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String trackNum = trackingNumber.getEditText().getText().toString();
+                String anhoenv = year.getSelectedItem().toString();
+                String dest = destino.getText().toString();
+                JSONObject request = new JSONObject();
+                try{
+                    request.put("Anio", anhoenv);
+                    request.put("Destino", dest);
+                    request.put("Tracking", trackNum);
+                } catch (Exception e){
+                    Toast toast = Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+
+                SerpostDetailCall(request.toString());
             }
         });
 
@@ -161,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
             toast.show();
             buscar.setProgress(-1);
         }
-
+        detalle.setEnabled(true);
         //dummy.requestFocus();
 
     }
@@ -209,6 +239,79 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+
+    }
+
+    private void SerpostDetailCall(String json) {
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+        OkHttpClient client = new OkHttpClient();
+
+        RequestBody body = RequestBody.create(JSON, json);
+
+        Request request = new Request.Builder()
+                .url(urlDetalle)
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast toast = Toast.makeText(MainActivity.this, "No se pudo contactar al servidor", Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String aux = response.body().string();
+                try{
+                    final JSONObject r = new JSONObject(aux);
+
+                    MainActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            DetailDialog(r);
+                        }
+                    });
+                } catch (JSONException e) {
+                    Log.d("mainactivity", "onResponse: " + e.getMessage());
+                }
+            }
+        });
+    }
+
+    private void DetailDialog(JSONObject r) {
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(MainActivity.this);
+        builderSingle.setTitle("Detalle");
+        builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_detalle, null);
+        builderSingle.setView(dialogView);
+
+        TextView detalle = (TextView) dialogView.findViewById(R.id.detalleTV);
+        try{
+            JSONObject d = r.getJSONObject("d");
+
+            String item = d.getString("ResulQuery");
+            detalle.setText(Html.fromHtml(item));
+
+        } catch (Exception e){
+            Toast toast = Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT);
+            toast.show();
+        }
+
+        builderSingle.show();
 
 
     }
